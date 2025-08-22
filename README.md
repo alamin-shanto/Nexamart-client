@@ -1,36 +1,105 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🛒 NexaMart – Modern Marketplace Web App
 
-## Getting Started
+NexaMart is a full-stack marketplace web application built with Next.js 14, TypeScript, and MongoDB. It allows users to browse products across all categories, view product details, and manage product listings. Designed for scalability, performance, and seamless user experience.
 
-First, run the development server:
+🚀 Features
 
-```bash
+Next.js 14 + TypeScript for modern, type-safe development
+
+Dynamic Product Listings – Fetch products from MongoDB in real-time
+
+Product Details Page – View individual product info dynamically
+
+Authentication & Authorization – Secure login using NextAuth.js
+
+Dashboard for Product Management – Add new products with ease
+
+Reusable Components – Clean, modular code structure (Navbar, Hero, ProductCard, etc.)
+
+Responsive UI – TailwindCSS-powered design for all devices
+
+API Routes – RESTful API built within Next.js (/api/products, /api/auth)
+
+🏗️ Tech Stack
+
+Frontend: Next.js 14, React, TypeScript, TailwindCSS
+
+Backend: Next.js API Routes, NextAuth.js
+
+Database: MongoDB (with Mongoose)
+
+Deployment: Netlify (Frontend), MongoDB Atlas (Database)
+
+┣ 📂app
+┃ ┣ 📂api
+┃ ┃ ┣ 📂auth
+┃ ┃ ┃ ┗ 📂[...nextauth]
+┃ ┃ ┃ ┗ 📜route.ts
+┃ ┃ ┗ 📂products
+┃ ┃ ┣ 📂[id]
+┃ ┃ ┃ ┗ 📜route.ts
+┃ ┃ ┗ 📜route.ts
+┃ ┣ 📂dashboard
+┃ ┃ ┗ 📂add-product
+┃ ┃ ┗ 📜page.tsx
+┃ ┣ 📂login
+┃ ┃ ┗ 📜page.tsx
+┃ ┣ 📂products
+┃ ┃ ┣ 📂[id]
+┃ ┃ ┃ ┗ 📜page.tsx
+┃ ┃ ┗ 📜page.tsx
+┃ ┣ 📜globals.css
+┃ ┣ 📜layout.tsx
+┃ ┗ 📜page.tsx
+┣ 📂components
+┃ ┣ 📜Hero.tsx
+┃ ┣ 📜Navbar.tsx
+┃ ┣ 📜ProductCard.tsx
+┃ ┣ 📜ProductHighlights.tsx
+┃ ┗ 📜Spinner.tsx
+┣ 📂library
+┃ ┣ 📜auth.ts
+┃ ┗ 📜mongodb.ts
+┣ 📂types
+┃ ┗ 📜product.d.ts
+┣ 📜.env.local
+┣ 📜providers.tsx
+┗ 📜templates.tsx
+
+⚙️ Setup & Installation
+1️⃣ Clone the Repository
+git clone https://github.com/yourusername/qodo-marketplace.git
+cd qodo-marketplace
+
+2️⃣ Install Dependencies
+npm install
+
+3️⃣ Configure Environment Variables
+
+Create a .env.local file in the root and add:
+
+MONGODB_URI=your_mongodb_connection_string
+NEXTAUTH_SECRET=your_nextauth_secret
+
+4️⃣ Run the Development Server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+App will be running at: http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+🌍 Live Demo
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+View Demo on Netlify
+(Add your deployment link here)
 
-## Learn More
+📸 Screenshots
 
-To learn more about Next.js, take a look at the following resources:
+(screenshots of landing page, product page, dashboard)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+🤝 Contributing
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Contributions, issues, and feature requests are welcome!
+Feel free to open an issue or submit a pull request.
 
-## Deploy on Vercel
+📜 License
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+This project is licensed under the MIT License.

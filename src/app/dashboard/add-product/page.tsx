@@ -1,21 +1,25 @@
 "use client";
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 
 export default function AddProductPage() {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
-  if (!session) {
-    router.push("/login");
-    return null;
-  }
+  useEffect(() => {
+    if (status !== "loading" && !session) {
+      router.push("/login");
+    }
+  }, [session, status, router]);
+
+  if (status === "loading" || !session) return <p>Loading...</p>;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +29,7 @@ export default function AddProductPage() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, description, price }),
     });
+
     if (res.ok) {
       toast.success("Product added");
       router.push("/products");
