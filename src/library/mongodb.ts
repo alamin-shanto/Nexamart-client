@@ -4,12 +4,13 @@ if (!process.env.MONGODB_URI) throw new Error("Missing MONGODB_URI");
 const uri = process.env.MONGODB_URI;
 const options = {};
 
-let client: MongoClient;
-let clientPromise: Promise<MongoClient>;
-
+// --- Tell TypeScript about the custom global ---
 declare global {
   var _mongoClientPromise: Promise<MongoClient>;
 }
+
+let client: MongoClient;
+let clientPromise: Promise<MongoClient>;
 
 if (process.env.NODE_ENV === "development") {
   if (!global._mongoClientPromise) {
