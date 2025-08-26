@@ -11,10 +11,31 @@ export default function ProductDetailsPage() {
 
   useEffect(() => {
     if (!id) return;
-    fetch(`/api/products/${id}`)
-      .then((res) => res.json())
-      .then((data) => setProduct(data))
-      .finally(() => setLoading(false));
+
+    const fetchProduct = async () => {
+      try {
+        const res = await fetch(`/api/products/${id}`);
+        const text = await res.text();
+        const data = text ? JSON.parse(text) : null;
+
+        if (!res.ok) {
+          console.error(
+            "Failed to fetch product:",
+            data?.error || res.statusText
+          );
+          setProduct(null);
+        } else {
+          setProduct(data?.data || null);
+        }
+      } catch (err) {
+        console.error("Error fetching product:", err);
+        setProduct(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProduct();
   }, [id]);
 
   if (loading) return <Spinner />;

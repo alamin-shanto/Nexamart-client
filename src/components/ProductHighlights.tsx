@@ -4,7 +4,10 @@ import Spinner from "./Spinner";
 import ProductCard from "./ProductCard";
 import { Product } from "@/types/product";
 
-const fetcher = (url: string) => fetch(url).then((res) => res.json());
+const fetcher = (url: string) =>
+  fetch(url)
+    .then((res) => res.json())
+    .then((json) => json.data || []);
 
 export default function ProductHighlights() {
   const { data, error, isLoading } = useSWR<Product[]>(
@@ -18,7 +21,7 @@ export default function ProductHighlights() {
 
   return (
     <section className="p-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-      {data.map((product: Product) => (
+      {data.map((product) => (
         <ProductCard key={product._id} product={product} />
       ))}
     </section>

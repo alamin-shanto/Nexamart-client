@@ -2,8 +2,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { NextAuthOptions } from "next-auth";
 import { JWT } from "next-auth/jwt";
 
-// Extend NextAuth types
-
 declare module "next-auth/jwt" {
   interface JWT {
     sub?: string;

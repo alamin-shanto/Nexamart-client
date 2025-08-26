@@ -9,10 +9,30 @@ export default function ProductsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/products")
-      .then((res) => res.json())
-      .then((data) => setProducts(data))
-      .finally(() => setLoading(false));
+    const fetchProducts = async () => {
+      try {
+        const res = await fetch("/api/products");
+        const text = await res.text();
+        const data = text ? JSON.parse(text) : null;
+
+        if (!res.ok) {
+          console.error(
+            "Failed to fetch products:",
+            data?.error || res.statusText
+          );
+          setProducts([]);
+        } else {
+          setProducts(data?.products || []); // make sure to pick the array
+        }
+      } catch (err) {
+        console.error("Error fetching products:", err);
+        setProducts([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
   }, []);
 
   if (loading) return <Spinner />;
