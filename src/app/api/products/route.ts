@@ -6,7 +6,7 @@ import { ObjectId, Decimal128, Document } from "mongodb";
 
 export const runtime = "nodejs";
 
-// Utility: Safely serialize MongoDB data
+// Serialize MongoDB fields safely
 function serializeProduct(p: Document) {
   return {
     ...p,
@@ -15,18 +15,19 @@ function serializeProduct(p: Document) {
       p.price instanceof Decimal128
         ? parseFloat(p.price.toString())
         : Number(p.price) || 0,
+    quantity:
+      p.quantity instanceof Decimal128
+        ? parseFloat(p.quantity.toString())
+        : Number(p.quantity) || 0,
     createdAt: p.createdAt instanceof Date ? p.createdAt.toISOString() : null,
   };
 }
 
-// GET: Fetch all products
 export async function GET() {
   try {
     const client = await clientPromise;
     const db = client.db("NexaMart");
-
-    const products = await db.collection("products").find().toArray();
-
+    const products = await db.collection("Products").find().toArray();
     return NextResponse.json({
       success: true,
       data: products.map(serializeProduct),
@@ -40,32 +41,43 @@ export async function GET() {
   }
 }
 
-// POST: Add new product (Authenticated)
 export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    console.log("Session in POST /api/products:", session);
-
     if (!session)
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
     const data = await req.json();
-    if (!data.name || isNaN(Number(data.price))) {
+
+    // Basic validation
+    if (!data.name || isNaN(Number(data.price)) || isNaN(Number(data.quantity)))
       return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
-    }
+
+    if (!["Shirt", "Pants", "Mobile"].includes(data.category))
+      return NextResponse.json({ error: "Invalid category" }, { status: 400 });
+
+    // Optional: enforce sizes for clothing
+    if (
+      (data.category === "Shirt" || data.category === "Pants") &&
+      (!Array.isArray(data.sizes) || data.sizes.length === 0)
+    )
+      return NextResponse.json(
+        { error: "Sizes are required for clothing" },
+        { status: 400 }
+      );
 
     const client = await clientPromise;
     const db = client.db("NexaMart");
 
     const product = {
-      name: data.name,
-      description: data.description || "",
+      ...data,
       price: Number(data.price),
+      quantity: Number(data.quantity),
       createdAt: new Date(),
       createdBy: session.user?.email || "unknown",
     };
 
-    const result = await db.collection("products").insertOne(product);
+    const result = await db.collection("Products").insertOne(product);
 
     return NextResponse.json(
       {

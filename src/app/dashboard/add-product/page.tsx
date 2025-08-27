@@ -12,6 +12,7 @@ interface ProductPayload {
   category: ProductCategory | "";
   name: string;
   price: number;
+  quantity: number;
   fabrics?: string | null;
   season?: string | null;
   sizes?: string[];
@@ -29,7 +30,8 @@ export default function AddProductPage() {
 
   const [category, setCategory] = useState<ProductCategory | "">("");
   const [name, setName] = useState("");
-  const [price, setPrice] = useState<number>(0);
+  const [price, setPrice] = useState<string>(""); // empty string for better UX
+  const [quantity, setQuantity] = useState<string>(""); // new field
 
   const [fabrics, setFabrics] = useState("");
   const [season, setSeason] = useState("");
@@ -52,7 +54,6 @@ export default function AddProductPage() {
 
   useEffect(() => {
     let objectUrl: string | null = null;
-
     if (imageFile) {
       objectUrl = URL.createObjectURL(imageFile);
       setPreview(objectUrl);
@@ -61,11 +62,8 @@ export default function AddProductPage() {
     } else {
       setPreview(null);
     }
-
     return () => {
-      if (objectUrl) {
-        URL.revokeObjectURL(objectUrl);
-      }
+      if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
   }, [imageFile, imageUrl]);
 
@@ -90,6 +88,8 @@ export default function AddProductPage() {
       return toast.error("Please fill all clothing fields");
     if (category === "Mobile" && (!ram || !rom || !chipset || !camera))
       return toast.error("Please fill all mobile fields");
+    if (!price || !quantity)
+      return toast.error("Please provide price and quantity");
     if (!imageFile && !imageUrl) return toast.error("Please provide an image");
 
     setLoading(true);
@@ -98,7 +98,8 @@ export default function AddProductPage() {
       const body: ProductPayload = {
         category,
         name,
-        price,
+        price: Number(price),
+        quantity: Number(quantity),
         fabrics: fabrics || null,
         season: season || null,
         sizes,
@@ -143,25 +144,25 @@ export default function AddProductPage() {
 
   if (status === "loading" || !session)
     return (
-      <div className="flex justify-center items-center h-screen bg-gray-50">
-        <p className="text-lg text-gray-600 animate-pulse">Loading...</p>
+      <div className="flex justify-center items-center min-h-screen bg-black">
+        <p className="text-lg text-white animate-pulse">Loading...</p>
       </div>
     );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+    <div className="min-h-screen flex items-center justify-center bg-black p-6">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-xl bg-white shadow-xl rounded-3xl p-8 flex flex-col gap-6"
+        className="w-full max-w-xl bg-gray-900 bg-opacity-90 shadow-2xl rounded-3xl p-8 flex flex-col gap-6 backdrop-blur-md"
       >
-        <h2 className="text-3xl font-extrabold text-gray-800 text-center">
+        <h2 className="text-3xl font-extrabold text-white text-center">
           Add New Product
         </h2>
 
         <select
           value={category}
           onChange={(e) => setCategory(e.target.value as ProductCategory)}
-          className="border border-gray-300 p-3 rounded-2xl focus:ring-2 focus:ring-yellow-400"
+          className="border border-gray-700 p-3 rounded-2xl focus:ring-2 focus:ring-yellow-400 bg-gray-800 text-white"
           required
         >
           <option value="">Select Category</option>
@@ -174,16 +175,26 @@ export default function AddProductPage() {
           value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Product Name"
-          className="border border-gray-300 p-3 rounded-2xl focus:ring-2 focus:ring-yellow-400"
+          className="border border-gray-700 p-3 rounded-2xl focus:ring-2 focus:ring-yellow-400 bg-gray-800 text-white"
           required
         />
 
         <input
           type="number"
           value={price}
-          onChange={(e) => setPrice(Number(e.target.value))}
+          onChange={(e) => setPrice(e.target.value)}
           placeholder="Price"
-          className="border border-gray-300 p-3 rounded-2xl focus:ring-2 focus:ring-yellow-400"
+          className="border border-gray-700 p-3 rounded-2xl focus:ring-2 focus:ring-yellow-400 bg-gray-800 text-white"
+          required
+          min={0}
+        />
+
+        <input
+          type="number"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+          placeholder="Quantity"
+          className="border border-gray-700 p-3 rounded-2xl focus:ring-2 focus:ring-yellow-400 bg-gray-800 text-white"
           required
           min={0}
         />
@@ -194,13 +205,13 @@ export default function AddProductPage() {
               value={fabrics}
               onChange={(e) => setFabrics(e.target.value)}
               placeholder="Fabrics (e.g., Cotton, Denim)"
-              className="border border-gray-300 p-3 rounded-2xl"
+              className="border border-gray-700 p-3 rounded-2xl bg-gray-800 text-white"
               required
             />
             <select
               value={season}
               onChange={(e) => setSeason(e.target.value)}
-              className="border border-gray-300 p-3 rounded-2xl"
+              className="border border-gray-700 p-3 rounded-2xl bg-gray-800 text-white"
               required
             >
               <option value="">Select Season</option>
@@ -208,17 +219,17 @@ export default function AddProductPage() {
               <option value="Winter">Winter</option>
             </select>
             <div>
-              <p className="font-medium mb-2">Select Sizes:</p>
+              <p className="font-medium mb-2 text-white">Select Sizes:</p>
               <div className="flex gap-3 flex-wrap">
                 {["S", "M", "L", "XL"].map((s) => (
                   <button
                     key={s}
                     type="button"
                     onClick={() => toggleSizeSelection(s)}
-                    className={`px-4 py-2 rounded-xl border ${
+                    className={`px-4 py-2 rounded-xl border font-semibold ${
                       sizes.includes(s)
                         ? "bg-yellow-500 text-white"
-                        : "bg-gray-100 text-gray-700"
+                        : "bg-gray-700 text-white"
                     }`}
                   >
                     {s}
@@ -235,21 +246,21 @@ export default function AddProductPage() {
               value={ram}
               onChange={(e) => setRam(e.target.value)}
               placeholder="RAM (e.g., 8GB)"
-              className="border border-gray-300 p-3 rounded-2xl"
+              className="border border-gray-700 p-3 rounded-2xl bg-gray-800 text-white"
               required
             />
             <input
               value={rom}
               onChange={(e) => setRom(e.target.value)}
               placeholder="ROM/Storage (e.g., 128GB)"
-              className="border border-gray-300 p-3 rounded-2xl"
+              className="border border-gray-700 p-3 rounded-2xl bg-gray-800 text-white"
               required
             />
             <input
               value={chipset}
               onChange={(e) => setChipset(e.target.value)}
               placeholder="Chipset (e.g., Snapdragon 8 Gen 2)"
-              className="border border-gray-300 p-3 rounded-2xl"
+              className="border border-gray-700 p-3 rounded-2xl bg-gray-800 text-white"
               required
             />
             <input
@@ -259,21 +270,21 @@ export default function AddProductPage() {
                 setCamera(e.target.value)
               }
               placeholder="Camera (MP)"
-              className="border border-gray-300 p-3 rounded-2xl"
+              className="border border-gray-700 p-3 rounded-2xl bg-gray-800 text-white"
               required
             />
           </>
         )}
 
         <div className="flex flex-col gap-2">
-          <label className="text-gray-700 font-medium">
+          <label className="text-white font-medium">
             Upload Image or Enter URL
           </label>
           <input
             type="file"
             accept="image/*"
             onChange={handleFileChange}
-            className="border border-gray-300 p-2 rounded-xl cursor-pointer"
+            className="border border-gray-700 p-2 rounded-xl cursor-pointer bg-gray-800 text-white"
           />
           <input
             type="url"
@@ -283,16 +294,15 @@ export default function AddProductPage() {
               setImageUrl(e.target.value);
               setImageFile(null);
             }}
-            className="border border-gray-300 p-3 rounded-2xl"
+            className="border border-gray-700 p-3 rounded-2xl bg-gray-800 text-white"
           />
           {preview && (
-            <div className="relative w-full h-64 mt-2 rounded-xl border border-gray-200 overflow-hidden bg-gray-50">
+            <div className="relative w-full h-64 mt-2 rounded-xl border border-gray-700 overflow-hidden bg-gray-800">
               <Image
                 src={preview}
                 alt="Preview"
                 fill
-                style={{ objectFit: "cover" }}
-                sizes="(max-width: 768px) 100vw, 32rem"
+                className="w-full h-full object-cover"
               />
             </div>
           )}
@@ -301,7 +311,7 @@ export default function AddProductPage() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-yellow-500 text-white font-bold py-3 rounded-2xl hover:bg-yellow-600 transition duration-300 shadow-lg"
+          className="bg-yellow-500 text-black font-bold py-3 rounded-2xl hover:bg-yellow-600 transition duration-300 shadow-lg"
         >
           {loading ? "Adding..." : "Add Product"}
         </button>

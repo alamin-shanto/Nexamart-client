@@ -10,20 +10,19 @@ export async function GET(
 ) {
   const { id } = await context.params;
 
+  if (!id || !ObjectId.isValid(id)) {
+    return NextResponse.json(
+      { success: false, error: "Invalid ID" },
+      { status: 400 }
+    );
+  }
+
   try {
     const client = await clientPromise;
     const db = client.db("NexaMart");
 
-    // Validate ID format
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, error: "Invalid ID" },
-        { status: 400 }
-      );
-    }
-
     const product = await db
-      .collection("products")
+      .collection("Products")
       .findOne({ _id: new ObjectId(id) });
 
     if (!product) {
@@ -33,7 +32,6 @@ export async function GET(
       );
     }
 
-    // Convert MongoDB fields to JSON-safe types
     const safeProduct = {
       ...product,
       _id: product._id.toString(),
@@ -46,10 +44,7 @@ export async function GET(
         : null,
     };
 
-    return NextResponse.json(
-      { success: true, data: safeProduct },
-      { status: 200 }
-    );
+    return NextResponse.json({ success: true, data: safeProduct });
   } catch (err) {
     console.error("GET /products/[id] error:", err);
     return NextResponse.json(

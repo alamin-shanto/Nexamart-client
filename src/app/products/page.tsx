@@ -22,7 +22,7 @@ export default function ProductsPage() {
           );
           setProducts([]);
         } else {
-          setProducts(data?.products || []); // make sure to pick the array
+          setProducts(data?.data || []);
         }
       } catch (err) {
         console.error("Error fetching products:", err);
@@ -35,9 +35,35 @@ export default function ProductsPage() {
     fetchProducts();
   }, []);
 
-  if (loading) return <Spinner />;
+  if (loading)
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spinner />
+      </div>
+    );
+
+  if (products.length === 0)
+    return (
+      <div className="flex flex-col justify-center items-center h-screen text-center p-6 space-y-4">
+        <div className="text-7xl">📦</div> {/* Box emoji as placeholder */}
+        <h2 className="text-3xl font-bold text-gray-700">
+          No Products Available
+        </h2>
+        <p className="text-gray-500 max-w-xs">
+          We’re sorry, there are currently no products to display. Please check
+          back later.
+        </p>
+        <a
+          href="/dashboard/add-product"
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition"
+        >
+          Add a Product
+        </a>
+      </div>
+    );
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 p-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-6">
       {products.map((p) => (
         <ProductCard key={p._id} product={p} />
       ))}
