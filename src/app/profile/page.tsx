@@ -81,7 +81,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
+    <div className="flex justify-center items-center min-h-screen p-6">
       <div className="w-full max-w-2xl bg-white/80 backdrop-blur-lg shadow-2xl rounded-3xl p-10 flex flex-col items-center border border-gray-200 relative overflow-hidden">
         {/* Animated Background Circles */}
         <div className="absolute top-0 left-0 w-40 h-40 bg-blue-200 rounded-full blur-3xl opacity-40 -z-10 animate-pulse-slow" />

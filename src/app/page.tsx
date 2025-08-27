@@ -1,4 +1,5 @@
 "use client";
+
 import Hero from "@/components/Hero";
 import ProductHighlights from "@/components/ProductHighlights";
 

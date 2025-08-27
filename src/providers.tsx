@@ -6,6 +6,7 @@ import { SessionProvider } from "next-auth/react";
 import { Session } from "next-auth";
 import Navbar from "@/components/Navbar";
 import { useState, useEffect } from "react";
+import Footer from "./components/Footer";
 
 export default function Providers({
   children,
@@ -33,6 +34,7 @@ export default function Providers({
         <Navbar />
         {children}
         <Toaster position="top-right" />
+        <Footer />
       </ThemeProvider>
     </SessionProvider>
   );
