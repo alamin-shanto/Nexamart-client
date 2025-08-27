@@ -1,14 +1,22 @@
+import type { DefaultSession, NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { NextAuthOptions } from "next-auth";
-import { JWT } from "next-auth/jwt";
+import type { JWT } from "next-auth/jwt";
 
-declare module "next-auth/jwt" {
-  interface JWT {
-    sub?: string;
+// --- Type augmentation for Session ---
+declare module "next-auth" {
+  interface Session extends DefaultSession {
+    // Add custom properties here instead of redeclaring 'user'
+    id?: string;
+    role?: string;
+  }
+
+  interface User {
+    id: string;
     role?: string;
   }
 }
 
+// --- NextAuth configuration ---
 export const authOptions: NextAuthOptions = {
   providers: [
     CredentialsProvider({
@@ -38,12 +46,15 @@ export const authOptions: NextAuthOptions = {
       return token;
     },
 
-    async session({ session, token }) {
-      if (session.user) {
-        session.user.id = (token.sub as string) ?? "";
-        session.user.role = (token.role as string) ?? "user";
-      }
-      return session;
+    async session({
+      session,
+      token,
+    }): Promise<DefaultSession & { id: string; role?: string }> {
+      return {
+        ...session,
+        id: token.sub ?? "",
+        role: token.role ?? "user",
+      };
     },
   },
 

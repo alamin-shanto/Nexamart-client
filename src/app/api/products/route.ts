@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
 import clientPromise from "@/library/mongodb";
-import { getServerSession } from "next-auth";
+
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ObjectId, Decimal128, Document } from "mongodb";
+import { getServerSession } from "next-auth";
 
 export const runtime = "nodejs";
 

@@ -1,4 +1,4 @@
-import NextAuth, { NextAuthOptions } from "next-auth";
+import NextAuth, { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import GoogleProvider from "next-auth/providers/google";
 
@@ -7,15 +7,16 @@ declare module "next-auth" {
   interface Session {
     user: {
       id: string;
-      role?: string;
+      role?: string | undefined; // make consistent
       name: string;
       email?: string | null;
+      image?: string | null;
     };
   }
 
   interface User {
     id: string;
-    role?: string;
+    role?: string | undefined; // match Session.user
     name: string;
     email?: string | null;
   }
@@ -29,7 +30,7 @@ declare module "next-auth/jwt" {
 }
 
 // --- Auth options ---
-export const authOptions: NextAuthOptions = {
+export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -65,7 +66,7 @@ export const authOptions: NextAuthOptions = {
     async session({ session, token }) {
       if (session.user) {
         session.user.id = token.sub ?? "";
-        session.user.role = token.role;
+        session.user.role = token.role; // type is now consistent
       }
       return session;
     },
